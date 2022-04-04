@@ -3,6 +3,8 @@ package cat.itb.mythosapi.controladors;
 import cat.itb.mythosapi.model.entitats.Mythos;
 import cat.itb.mythosapi.model.serveis.ServeiMythos;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,47 +14,58 @@ import java.util.List;
 public class ControladorMythos {
     private final ServeiMythos serveiMythos;
 
+    @GetMapping("/mythos/{id}")
+    public ResponseEntity<?> consultarMythos(@PathVariable String id) {
+        Mythos res = serveiMythos.consultarMythosName(id);
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/mythos/name/{mythosId}")
+    public ResponseEntity<?> llistarMythosPerMythos(@PathVariable String mythos) {
+        List<Mythos> res = serveiMythos.llistarMythosPerMythosName(mythos);
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/mythos")
+    public ResponseEntity<?> consultarMythos() {
+        List<Mythos> res = serveiMythos.llistarMythos();
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/mythos/comptar/{mythosId}")
+    public ResponseEntity<?> comptarPerMythos(@PathVariable String mythos) {
+        Long res = serveiMythos.comptarPerMythos(mythos);
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/mythos")
+    public ResponseEntity<?> crearMythos(@RequestBody Mythos nou){
+        Mythos res=serveiMythos.afegirMythos(nou);
+        return new ResponseEntity<Mythos>(res, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/mythos/{mythosId}")
+    public ResponseEntity<?> eliminarMythos(@PathVariable String id) {
+        Mythos res = serveiMythos.eliminarMythos(id);
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/mythos")
+    public ResponseEntity<?> modificarMythos(@PathVariable Mythos mod) {
+        Mythos res = serveiMythos.modificarMythos(mod);
+        if (res == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(res);
+    }
+
     //requestparam are required by default
     //l'endpoint és únic, crea ambigüitat
 //    @GetMapping("/usuaris")
 //    public List<Usuari> llistarMenorsAUnSou(@RequestParam (value="sou") double sou){
 //        return serveiUsuaris.llistatPerSouMenorA(sou);
 //    }
-
-    @GetMapping("/mythos")
-    public List<Mythos> consultarMythos()
-    {
-        return serveiMythos.llistarMythos();
-    }
-
-    @GetMapping("/mythos/{id}")
-    public Mythos consultarMythos(@PathVariable String id)
-    {
-        return serveiMythos.consultarMythosName(id);
-    }
-
-    @GetMapping("/mythos/name/{mythosId}")
-    public List<Mythos> llistarMythosPerMythos(@PathVariable String mythos){
-        return serveiMythos.llistarMythosPerMythosName(mythos);
-    }
-
-    @GetMapping("/mythos/comptar/{mythosId}")
-    public long comptarPerMythos(@PathVariable String mythos){
-        return serveiMythos.comptarPerMythos(mythos);
-    }
-
-    @PostMapping("/mythos")
-    public Mythos crearMythos(@RequestBody Mythos nou){
-        return serveiMythos.afegirMythos(nou);
-    }
-
-    @DeleteMapping("/mythos/{mythosId}")
-    public Mythos eliminarMythos(@PathVariable String id){
-        return serveiMythos.eliminarMythos(id);
-    }
-
-    @PutMapping("/mythos")
-    public Mythos modificarMythos(@RequestBody Mythos mod){
-        return serveiMythos.modificarMythos(mod);
-    }
 }
